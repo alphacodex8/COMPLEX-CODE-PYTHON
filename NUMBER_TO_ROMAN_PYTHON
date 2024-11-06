@@ -1,0 +1,48 @@
+no = int(input("Enter a number: "))
+length = len(str(no))
+l = length
+
+no_lst = [] #numbers in place value form, eg: 456 = 400,50,6
+for digit in str(no):
+    no_lst.append(int(digit)*(10**(l-1)))
+    l-=1 
+print(no_lst)
+
+val_dic = {1:"I", 5:"V", 10:"X", 50:"L", 100:"C", 500:"D", 1000:"M", 2000:"I̅I̅", 3000:"I̅I̅I̅", 4000:"I̅V̅", 5000:"V̅", 6000:"V̅I̅", 7000:"V̅I̅I̅", 8000:"V̅I̅I̅I̅", 9000:"I̅X̅", 10000:"X̅"} # standard values
+
+word = ""
+for plc in no_lst:
+    if plc!=0: # no zero in roman
+        if plc in val_dic.keys(): # if place value already defined in dict 
+            for val in val_dic.keys():
+                if plc==val:
+                    word+=val_dic[val]
+        
+        elif plc/int(str(plc)[0]) in val_dic.keys(): # if basic value in dict, eg: 400/4 = 100 in list
+            for val in val_dic.keys():
+                if plc/int(str(plc)[0])==val and val_dic[val]!="V" and val_dic[val]!="L" and val_dic[val]!="D": # V, L, D not repeated
+                    
+                    if int(str(plc)[0])<=3: # if place value begins with 1,2,3
+                        word+=(val_dic[val]*int(str(plc)[0])) # repeat to add
+                    
+                    elif int(str(plc)[0])==4: # if place value begins with 4 eg 40: -10+50
+                        for val1 in val_dic.keys():
+                            if int(str(val1)[0])==1 and len(str(val1))==len(str(plc)): 
+                                word+=val_dic[val1]
+                        for val1 in val_dic.keys():
+                            if int(str(val1)[0])==5 and len(str(val1))==len(str(plc)):
+                                word+=val_dic[val1]
+                    
+                    elif int(str(plc)[0])>=6 and int(str(plc)[0])<=8: # if place value begind with 6,7,8 eg: 70: 50+10+10
+                        for val1 in val_dic.keys():
+                            if int(str(val1)[0])==5 and len(str(val1))==len(str(plc)):
+                                word+=val_dic[val1]
+                        for val1 in val_dic.keys():  
+                            if int(str(val1)[0])==1 and len(str(val1))==len(str(plc)):
+                                word+=(val_dic[val1]*(int(str(plc)[0])-5))
+
+                    elif int(str(plc)[0])==9: # if place value begins with 9 eg 90: -10+100
+                        for val1 in val_dic.keys():  
+                            if int(str(val1)[0])==1 and len(str(val1))==len(str(plc)):
+                                word+=(val_dic[val1]+val_dic[int(str(val1)+str(0))])
+print(word)
