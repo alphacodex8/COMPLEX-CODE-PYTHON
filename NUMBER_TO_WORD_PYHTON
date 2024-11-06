@@ -1,0 +1,54 @@
+no = int(input("Enter a number: "))
+length = len(str(no))
+rem = length%3 #remainder: no of digits before first comma
+
+sep_lst = [] #comma separated number
+count = 0
+sep_no = ""
+
+if rem>0:
+    sep_lst.append(str(no)[0:rem]) #digits before first comma
+
+for i in str(no)[rem:length]:
+    sep_no+=i
+    count+=1
+    
+    if count==3: # eg 000, 100
+        sep_lst.append((sep_no))
+        count = 0
+        sep_no = ""
+
+blks = 0
+for i in range(len(sep_lst)):
+    blks+=1
+
+val_lst = {0:"Zero", 1:"One", 2:"Two", 3:"Three", 4:"Four", 5:"Five", 6:"Six", 7:"Seven", 8:"Eight", 9:"Nine", 10:"Ten", 11:"Eleven", 12:"Twelve", 13:"Thirteen", 14:"Fourteen", 15:"Fifteen", 16:"Sixteen", 17:"Seventeen", 18:"Eighteen", 19:"Nineteen", 20:"Twenty", 30:"Thirty", 40:"Forty", 50:"Fifty", 60:"Sixty", 70:"Seventy", 80:"Eighty", 90:"Ninety"}
+plc_lst = ["Thousand", "Million", "Billion", "Trillion", "Quadrillion", "Quintillion", "Sextillion", "Septillion", "Octillion", "Nonillion", "Decillion", "Undecillion"]
+
+word_no = ""
+plc = plc_lst[blks-2] # highest place value
+for i in range(len(sep_lst)):
+    if len(str(int((sep_lst)[i])))==3: #3 digit number in place
+        for val in val_lst.keys():
+            if int(sep_lst[i][0])==val:
+                word_no+=(val_lst[val]+" Hundred ")
+    
+    if int(sep_lst[i][-2:]) in val_lst.keys(): #if last 2 nos predefined eg: 19 
+        for val in val_lst.keys():
+            if int(sep_lst[i][-2:])==val:
+                word_no+=(val_lst[val]+" ")
+                
+    else: #2 digit number not predefined eg: 23
+        for val in val_lst.keys():
+            if int(sep_lst[i][-2])*10==val: #tens place
+                word_no+=(val_lst[val]+" ")
+
+        for val in val_lst.keys():
+            if int(sep_lst[i][-1])==val: #ones place
+                word_no+=(val_lst[val]+" ")
+
+    if blks>=2: #to check if thousands place or above
+        word_no+=(plc+" ")
+        blks-=1 
+        plc = plc_lst[blks-2]
+print(word_no)
