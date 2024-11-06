@@ -1,0 +1,155 @@
+import os
+
+pzl = open("E:\Allen's Folder\Python Files\CODING CHALLENGES\puzzle_medium.txt", "r")
+lns = pzl.readlines()
+
+choice_lst = [] # lst of all possible options for each empty space
+choice_sr = []
+
+# row sorting
+rows = []
+rows_sr = [] # sr nos
+cnt = 0 # sr
+
+for ln in lns:
+    row = []
+    sr = []
+    for no in ln.strip():
+        row.append(no)
+        cnt+=1
+        sr.append(cnt)
+    rows.append(row)
+    rows_sr.append(sr)
+
+# cube sorting
+def cube_sorting():
+    global cbs, cbs_sr
+    
+    cbs = [] # 3x3 cubes
+    cbs_sr = [] # sr nos
+
+    low_lmt_clm = 0
+    high_lmt_clm = 3
+    low_lmt_row = 0
+    high_lmt_row = 3
+
+    for i in range(9):
+        cb = []
+        sr = []
+        for row in rows[low_lmt_row:high_lmt_row]:
+            for no in row[low_lmt_clm:high_lmt_clm]:
+                cb.append(no)
+                
+        for row_sr in rows_sr[low_lmt_row:high_lmt_row]:
+            for no in row_sr[low_lmt_clm:high_lmt_clm]:
+                sr.append(no)
+
+        cbs.append(cb)
+        cbs_sr.append(sr)
+        
+        if low_lmt_clm+3<7:
+            low_lmt_clm+=3
+            high_lmt_clm+=3
+
+        else:
+            low_lmt_clm=0
+            high_lmt_clm=3
+            if low_lmt_row+3<7:
+                low_lmt_row+=3
+                high_lmt_row+=3
+            else:
+                break
+cube_sorting()
+
+check_choice = []
+
+def solving():
+    row_check = 0
+    clmn_check = 0
+    cb_check = 0
+    check = 0
+
+    for y in range(len(rows)):
+        for x in range(len(rows[y])):
+            if rows[y][x]=="0":
+                choices = []
+                for i in range(1, 10):
+                    row_check = 0
+                    clmn_check = 0
+                    cb_check = 0
+
+                    if str(i) in rows[y]: # check if number in row
+                        row_check = 1
+                        continue
+
+                    for row in rows: # check if number in column
+                        if str(i)==row[x]:
+                            clmn_check = 1
+                            continue
+
+                    for cb in range(len(cbs_sr)): # check if number in cube
+                        for c in range(len(cbs_sr[cb])):
+                            if cbs_sr[cb][c]==rows_sr[y][x]:
+                                for c1 in cbs[cb]:
+                                    if str(i)==c1:
+                                        cb_check = 1
+                                        continue
+                                        
+                    if row_check==0 and clmn_check==0 and cb_check==0: # if number not in row, column and cube
+                        check+=1
+                        choices.append(str(i))
+
+                        if check==1:
+                            n = str(i)
+                    
+                if check==1: # if only one possible number
+                    rows[y][x] = n # replace "0" with number
+
+                    cube_sorting() # resort cubes
+                    
+                else:
+                    check = 0
+                
+                choice_lst.append(choices)
+                choice_sr.append(rows_sr[y][x])
+    
+    if len(check_choice)==2:
+        check_choice.pop(0)
+    check_choice.append(choice_lst)
+    
+    print(len(check_choice))
+
+    if (len(check_choice)==2) and (check_choice[0]==check_choice[1]): # to check if no change in choices
+        print("EXECUTE")        
+    
+    print("Choices: ",choice_lst, "\n")
+    print("Choices Sr: ",choice_sr, "\n")
+    choice_lst.clear()
+    choice_sr.clear()
+
+# display
+while True:
+    
+    for row in rows:
+        print(row)
+    print()
+
+    # checking if empty spaces left
+    check_var = 0
+    for row in rows:
+        for no in row:
+            if no=="0":
+               check_var=1
+    
+    if check_var==1:
+        solving()
+        
+    else:
+        print("Solved")
+        for row in rows:
+            print(row)
+        print()
+        print("Choices: ",choice_lst, "\n")
+        print("Choices Sr: ",choice_sr, "\n")
+        
+        break
